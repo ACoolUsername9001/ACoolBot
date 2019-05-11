@@ -1,3 +1,4 @@
+#!venv/bin/python
 import traceback
 from discord.ext import commands
 import discord
