@@ -199,6 +199,20 @@ class Moderation(commands.Cog):
         await member.send(embed=embed)
         await ctx.send("{member.mention} has been {ctx.command.name}ed".format(member=member, ctx=ctx))
 
+    @commands.command(name='lock-channel', aliases=['lc'])
+    @moderation_check()
+    async def lock_channel(self, ctx: commands.Context, channels: commands.Greedy[discord.VoiceChannel]):
+        for channel in channels:
+            permissions = channel.overwrites_for(ctx.guild.default_role)
+            if permissions.connect is None:
+                permissions.connect = False
+                await channel.set_permissions(ctx.guild.default_role, overwrite=permissions)
+            else:
+                permissions.connect = None
+                await channel.set_permissions(ctx.guild.default_role, overwrite=permissions)
+
+        await ctx.send("Command Completed Successfully")
+
 
 def setup(bot):
     bot.add_cog(Moderation(bot))

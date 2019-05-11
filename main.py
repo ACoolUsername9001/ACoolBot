@@ -268,7 +268,7 @@ class ACoolBot(commands.Bot):
                     await channel.send(embed=embed)
 
     @staticmethod
-    @commands.command(name='reload-cogs', aliases=['rc','reload'])
+    @commands.command(name='reload-cogs', aliases=['rc', 'reload'])
     @owner_check()
     async def reload_cogs(ctx):
         for cog in ctx.bot.all_cogs:
