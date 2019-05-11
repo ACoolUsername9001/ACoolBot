@@ -794,6 +794,13 @@ class Fun(commands.Cog):
             output += '\n'
         await ctx.send(output)
 
+    @commands.command('bring-random', aliases=['br'])
+    async def bring_random(self, ctx: commands.Context, channel: discord.VoiceChannel):
+        permissions = ctx.author.permissions_in(channel)
+        if permissions.move_members:
+            member = random.choice(channel.members)
+            await member.move_to(ctx.author.voice.channel)
+
 
 def setup(bot):
     bot.add_cog(Fun(bot))
