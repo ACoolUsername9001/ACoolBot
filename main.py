@@ -238,7 +238,7 @@ class ACoolBot(commands.Bot):
                     embed = discord.Embed(title='Deleted Message', color=int('0xFF0000', 16), description=description,
                                           type='rich')
                     if message.attachments:
-                        embed.add_field(name='**Attachments:** ', value='\n'.join(message.attachments))
+                        embed.add_field(name='**Attachments:** ', value='\n'.join(message.attachments.proxy_url))
                     embed.set_footer(text='Message ID: ' + str(message.id))
                     embed.timestamp = message.created_at
                     await channel.send(embed=embed)
