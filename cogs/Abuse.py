@@ -2,6 +2,7 @@ from discord.ext import commands
 from main import ACoolBot
 import discord
 import json
+import random
 
 
 def get_data(gid: int, name, default=None, data=json.load(open('data.json'))):
