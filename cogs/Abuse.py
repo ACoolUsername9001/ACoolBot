@@ -131,7 +131,7 @@ class Abuse(commands.Cog):
             members += channel.members
         for member in members:
             allowed_channels = [channel for channel in channels if channel.permissions_for(member).connect or channel.permissions_for(member).read_messages]
-            await member.move(random.choice(allowed_channels))
+            await member.move_to(random.choice(allowed_channels))
 
 
 def setup(bot):
