@@ -121,6 +121,18 @@ class Abuse(commands.Cog):
     async def dump_data(self, ctx: commands.Context):
         await ctx.send(str(self.bot.data))
 
+    @commands.command(name="shuffle")
+    @owner_check()
+    async def shuffle(self, ctx: commands.Context):
+        """ shuffles the people to different voice channels """
+        members = []
+        channels = ctx.guild.voice_channels
+        for channel in channels:
+            members += channel.members
+        for member in members:
+            allowed_channels = [channel for channel in channels if channel.permissions_for(member).connect or channel.permissions_for(member).read_messages]
+            await member.move(random.choice(allowed_channels))
+
 
 def setup(bot):
     bot.add_cog(Abuse(bot))
