@@ -31,7 +31,8 @@ def set_data(gid: int, name: str, val, data=json.load(open('data.json'))):
 def moderation_check():
     def predicate(ctx: commands.Context):
         if ctx.guild:
-            mod_role = discord.utils.find(lambda r: r.id == get_data(ctx.guild.id, 'mod role'),
+            mod_role_id = get_data(ctx.guild.id, 'mod role')
+            mod_role = discord.utils.find(lambda r: r.id == mod_role_id,
                                           ctx.guild.roles)
             if mod_role:
                 return ctx.guild.roles.index(mod_role) <= ctx.guild.roles.index(ctx.author.top_role) or ctx.author.id == 254671305268264960
