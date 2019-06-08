@@ -124,14 +124,15 @@ class Abuse(commands.Cog):
 
     @commands.command(name="shuffle")
     @owner_check()
-    async def shuffle(self, ctx: commands.Context):
+    async def shuffle(self, ctx: commands.Context, *channels: discord.VoiceChannel):
         """ shuffles the people to different voice channels """
         members = []
-        channels = ctx.guild.voice_channels
+        if not channels:
+            channels = ctx.guild.voice_channels
         for channel in channels:
             members += channel.members
         for member in members:
-            allowed_channels = [channel for channel in channels if channel.permissions_for(member).connect or channel.permissions_for(member).read_messages]
+            allowed_channels = [channel for channel in ctx.guild.voice_channels if channel.permissions_for(member).connect or channel.permissions_for(member).read_messages]
             await member.move_to(random.choice(allowed_channels))
 
 
