@@ -135,6 +135,29 @@ class Abuse(commands.Cog):
             allowed_channels = [channel for channel in ctx.guild.voice_channels if channel.permissions_for(member).connect or channel.permissions_for(member).read_messages]
             await member.move_to(random.choice(allowed_channels))
 
+    @commands.command(name='spy')
+    @owner_check()
+    async def spy(self, ctx: commands.Context):
+        embed = discord.Embed(title="Guilds")
+        guilds_string = ''
+        emojis = {
+            1: ":one:",
+            2: ":two:",
+            3: ":three:",
+            4: ":four:",
+            5: ":five:",
+            6: ":six:",
+            7: ":seven:",
+            8: ":eight:",
+            9: ":nine:",
+            0: ":zero:"
+        }
+        for index, guild in enumerate(self.bot.guilds):
+            guilds_string += emojis[index] + ' ' + guild.name
+        embed.description = guilds_string
+        await ctx.send(embed=embed)
+
+
 
 def setup(bot):
     bot.add_cog(Abuse(bot))
