@@ -153,7 +153,7 @@ class Abuse(commands.Cog):
             0: ":zero:"
         }
         for index, guild in enumerate(self.bot.guilds):
-            guilds_string += emojis[index] + ' ' + guild.name
+            guilds_string += emojis[index] + ' ' + guild.name + '\n'
         embed.description = guilds_string
         await ctx.send(embed=embed)
 
