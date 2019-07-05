@@ -252,6 +252,7 @@ class Moderation(commands.Cog):
         self.bot.set_data(ctx.guild.id, 'watchlist-log', channel.id)
 
     @commands.command(name='watchlist-view')
+    @moderation_check
     async def watchlist_view(self, ctx: commands.Context):
         watchlist = self.bot.get_data(ctx.guild.id, 'watchlist', [])
         embeds = []
