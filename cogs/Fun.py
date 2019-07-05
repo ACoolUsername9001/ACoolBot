@@ -42,6 +42,7 @@ class Fun(commands.Cog):
 
     def __init__(self, bot: ACoolBot):
         self.bot = bot
+        self.pages = {}
 
     @commands.command(name='roll')
     async def roll(self, ctx: commands.Context, *dice: str):

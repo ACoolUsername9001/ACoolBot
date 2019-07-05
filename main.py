@@ -6,7 +6,7 @@ from discord import utils
 import datetime
 import time
 import json
-
+import asyncio
 
 def owner_check():
     def predicate(ctx: commands.Context):
@@ -27,7 +27,7 @@ class ACoolBot(commands.Bot):
             'cogs.Reddit',
             'cogs.Abuse'
         ]
-
+        self.pages = {}
         for extension in self.all_cogs:
             self.load_extension(extension)
         # self.add_command(self.invite)
@@ -300,6 +300,43 @@ class ACoolBot(commands.Bot):
     @staticmethod
     def is_admin(author: discord.Member):
         return author.guild_permissions.administrator and not author.bot
+
+    async def embeds_scroller(self, ctx: commands.Context, embeds):
+        embeds[0].set_footer(text='page: 1/{}'.format(len(embeds)))
+        message = await ctx.send(embed=embeds[0])
+        await message.add_reaction('◀')
+        await asyncio.sleep(0.1)
+        await message.add_reaction('▶')
+        self.pages.update({message.id: 0})
+
+        def scroll(reaction: discord.Reaction, user: discord.User):
+            if reaction.message.id == message.id and not user.bot:
+                if user == ctx.author and str(reaction.emoji) == '◀':
+                    self.pages.update({reaction.message.id: self.pages[reaction.message.id] - 1})
+                elif user == ctx.author and str(reaction.emoji) == '▶':
+                    self.pages.update({reaction.message.id: self.pages[reaction.message.id] + 1})
+                return True
+            else:
+                return False
+
+        while True:
+            try:
+                reaction, user = await self.wait_for('reaction_add', check=scroll, timeout=120.0)
+                if user is not self:
+                    await message.remove_reaction(reaction, user)
+
+                if user is ctx.author:
+                    index = self.pages[message.id] % len(embeds)
+                    embeds[index].set_footer(text='page: {page}/{total}'.format(page=self.pages[message.id]
+                                                                                % len(embeds) + 1,
+                                                                                total=len(embeds)))
+                    await message.edit(embed=embeds[index])
+
+            except asyncio.TimeoutError:
+                await message.remove_reaction('▶', self.user)
+                await message.remove_reaction('◀', self.user)
+                break
+        return
 
 
 if __name__ == '__main__':

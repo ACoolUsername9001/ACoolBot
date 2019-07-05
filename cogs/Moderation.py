@@ -215,6 +215,7 @@ class Moderation(commands.Cog):
         await ctx.send("Command Completed Successfully")
     
     @commands.command(name="watchlist-add")
+    @moderation_check()
     async def watchlist_add(self, ctx: commands.Context, member: discord.Member, *reason: str):
         watchlist = self.bot.get_data(ctx.guild.id, "watchlist", [])
         reason = " ".join(reason)
@@ -228,6 +229,7 @@ class Moderation(commands.Cog):
         await ctx.send("added {member} to watchlist".format(member=member.mention))
 
     @commands.command(name="watchlist-remove")
+    @moderation_check()
     async def watchlist_remove(self, ctx: commands.Context, member: discord.Member):
         watchlist = self.bot.get_data(ctx.guild.id, "watchlist", [])
         if watchlist:
@@ -237,7 +239,31 @@ class Moderation(commands.Cog):
                     await ctx.send("removed {member} from the watchlist".format(member=member.mention))
                     return
                 await ctx.send("{} was not found in watchlist".format(member.mention))
-        await ctx.send("watchlist is empty")
+        else:
+            await ctx.send("watchlist is empty")
+
+    @commands.command(name='watchlist-log')
+    async def watchlist_log(self, ctx: commands.Context, channel: discord.TextChannel = None):
+        if not channel:
+            await ctx.send("watchlist will not be logged")
+            self.bot.set_data(ctx.guild.id, 'watchlist-log', None)
+            return
+        await ctx.send("watchlist will be logged in {channel.id}".format(channel=channel))
+        self.bot.set_data(ctx.guild.id, 'watchlist-log', channel.id)
+
+    @commands.command(name='watchlist-view')
+    async def watchlist_view(self, ctx: commands.Context):
+        watchlist = self.bot.get_data(ctx.guild.id, 'watchlist', [])
+        embeds = []
+        for i in range(len(watchlist)//5 + 1):
+            embed = discord.Embed(title='watchlist', color=0xFF00FF)
+            for member_id, reason in watchlist[i*5:(i+1)*5]:
+                member_converter = commands.MemberConverter()
+                member = await member_converter.convert(ctx, str(member_id))
+                embed.add_field(name='{member.name} ({member.id})'.format(member=member),
+                                value=reason if reason is not '' else '*no reason was specified*')
+            embeds.append(embed)
+        await self.bot.embeds_scroller(ctx, embeds)
 
 
 def setup(bot):
