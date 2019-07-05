@@ -213,6 +213,31 @@ class Moderation(commands.Cog):
                 await channel.set_permissions(ctx.guild.default_role, overwrite=permissions)
 
         await ctx.send("Command Completed Successfully")
+    
+    @commands.command(name="watchlist-add")
+    async def watchlist_add(self, ctx: commands.Context, member: discord.Member, *reason: str):
+        watchlist = self.bot.get_data(ctx.guild.id, "watchlist", [])
+        reason = " ".join(reason)
+        if watchlist:
+            watchlisted_members = watchlist[:][0]
+            if member.id in watchlisted_members:
+                await ctx.send("{} already on watchlist".format(member.mention))
+                return
+        watchlist.append((member.id, reason))
+        self.bot.set_data(ctx.guild.id, "watchlist", watchlist)
+        await ctx.send("added {member} to watchlist".format(member=member.mention))
+
+    @commands.command(name="watchlist-remove")
+    async def watchlist_remove(self, ctx: commands.Context, member: discord.Member):
+        watchlist = self.bot.get_data(ctx.guild.id, "watchlist", [])
+        if watchlist:
+            for i in range(len(watchlist)):
+                if watchlist[i][0] == member.id:
+                    watchlist.pop(i)
+                    await ctx.send("removed {member} from the watchlist".format(member=member.mention))
+                    return
+                await ctx.send("{} was not found in watchlist".format(member.mention))
+        await ctx.send("watchlist is empty")
 
 
 def setup(bot):
