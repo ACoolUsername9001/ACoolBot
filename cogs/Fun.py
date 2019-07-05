@@ -2,34 +2,6 @@ import random
 from discord.ext import commands
 from main import ACoolBot
 import discord
-from discord.ext.commands import BucketType
-
-import colorsys
-
-# def cooldown_check(amount, time, bucketType):
-#     cd = commands.CooldownMapping.from_cooldown(amount, time, bucketType)
-#
-#     def predicate(ctx: commands.Context):
-#         bucket = cd.get_bucket(ctx.message)
-#         retry_after = bucket.update_rate_limit()
-#         admin = discord.utils.find(lambda r: r.name == 'Admin' or r.permissions.administrator, ctx.author.roles)
-#         if admin:
-#             if retry_after:
-#                 retry_after -= 3*time/4
-#                 if retry_after < 0:
-#                     retry_after = 0
-#                     bucket.reset()
-#
-#         if ctx.author.id == 254671305268264960:
-#             retry_after = 0
-#             bucket.reset()
-#
-#         if retry_after:
-#             raise commands.errors.CommandOnCooldown(bucket, retry_after)
-#
-#         return not retry_after
-#
-#     return commands.check(predicate)
 
 
 def owner_check():
@@ -96,7 +68,6 @@ class Fun(commands.Cog):
             await ctx.author.send("By using this command you agreed to being fully aware of the rules")
 
     @commands.command(name='big', aliases=['BIG', 'b', 'B'])
-    # @cooldown_check(1, 300, BucketType.user)
     async def big(self, ctx: commands.Context, *string: str):
         string = ' '.join(string).upper()
         if string[0] in 'אבגדהוזחטיכלמנסעפצקרשתץךףםן':

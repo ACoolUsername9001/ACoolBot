@@ -286,6 +286,25 @@ class ACoolBot(commands.Bot):
             await self.process_commands(message)
         if message.guild:
             admin_only_channels = self.get_data(message.guild.id, "admin only channels", [])
+            watchlist_log = self.get_data(message.guild.id, 'watchlist-log', None)
+            watchlist = [w[0] for w in self.get_data(message.guild.id, 'watchlist', [])]
+            watchlist_log = discord.utils.find(lambda c: c.id == watchlist_log, message.guild.text_channels)
+            if watchlist_log:
+                if message.author.id in watchlist and not message.author.bot:
+                    description = '**User:** {} `[{}]`\n**Channel:** {} `[{}]`\n{}'.format(message.author.mention,
+                                                                                           message.author.name,
+                                                                                           message.channel.mention,
+                                                                                           message.channel.name,
+                                                                                           message.content)
+                    embed = discord.Embed(title='Watchlist Message', color=int('0xFF00FF', 16), description=description,
+                                          type='rich')
+                    if message.attachments:
+                        embed.add_field(name='**Attachments:** ', value='\n'.join([a.proxy_url
+                                                                                   for a in message.attachments]))
+                    embed.set_footer(text='Message ID: ' + str(message.id))
+                    embed.timestamp = message.created_at
+                    await watchlist_log.send(embed=embed)
+
             if admin_only_channels:
                 if message.channel.id in admin_only_channels and not self.is_admin(message.author):
                     await message.delete()

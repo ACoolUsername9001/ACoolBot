@@ -248,7 +248,7 @@ class Moderation(commands.Cog):
             await ctx.send("watchlist will not be logged")
             self.bot.set_data(ctx.guild.id, 'watchlist-log', None)
             return
-        await ctx.send("watchlist will be logged in {channel.id}".format(channel=channel))
+        await ctx.send("watchlist will be logged in <#{channel.id}>".format(channel=channel))
         self.bot.set_data(ctx.guild.id, 'watchlist-log', channel.id)
 
     @commands.command(name='watchlist-view')
