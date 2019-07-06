@@ -238,7 +238,7 @@ class Moderation(commands.Cog):
                     watchlist.pop(i)
                     await ctx.send("removed {member} from the watchlist".format(member=member.mention))
                     return
-                await ctx.send("{} was not found in watchlist".format(member.mention))
+            await ctx.send("{} was not found in watchlist".format(member.mention))
         else:
             await ctx.send("watchlist is empty")
 
