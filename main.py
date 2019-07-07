@@ -356,6 +356,18 @@ class ACoolBot(commands.Bot):
                 await message.remove_reaction('◀', self.user)
                 break
         return
+    
+    def is_banned_word(self, message: discord.Message):
+        """
+        checks whether a banned word is in a message
+        :param message: discord message object
+        return bool: True if banned word is found else False
+        """
+        banned_words_list = self.get_data(message.guild.id, 'banned words', [])
+        for banned_word in banned_words_list:
+            if banned_word in message.content:
+                return True
+        return False
 
 
 if __name__ == '__main__':

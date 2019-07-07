@@ -266,6 +266,25 @@ class Moderation(commands.Cog):
             embeds.append(embed)
         await self.bot.embeds_scroller(ctx, embeds)
 
+    @commands.command(name='autoban-add')
+    @moderation_check()
+    async def autoban_add(self, ctx: commands.Context, member_id):
+        autoban_list = self.bot.get_data(ctx.guild.id, 'autoban list', [])
+        if member_id in autoban_list:
+            await ctx.send("this member is already in the autoban list")
+            return
+        autoban_list.append(member_id)
+        self.bot.set_data(ctx.guild.id, 'autoban list', autoban_list)
+        await ctx.send('member added to auto ban list')
+
+    @commands.command(name='autoban-remove')
+    @moderation_check()        
+    async def autoban_remove(self, ctx: commands.Context, member_id):
+        autoban_list = self.bot.get_data(ctx.guild.id, 'autoban list', [])
+        if member_id in autoban_list:
+            autoban_list.pop(member_id)
+            return await ctx.send('member was removed from the list')
+        return await ctx.send('member was not found in the autoban list')
 
 def setup(bot):
     bot.add_cog(Moderation(bot))
