@@ -282,7 +282,7 @@ class Moderation(commands.Cog):
     async def autoban_remove(self, ctx: commands.Context, member_id):
         autoban_list = self.bot.get_data(ctx.guild.id, 'autoban list', [])
         if member_id in autoban_list:
-            autoban_list.pop(member_id)
+            autoban_list.pop(autoban_list.index(member_id))
             return await ctx.send('member was removed from the list')
         return await ctx.send('member was not found in the autoban list')
 
