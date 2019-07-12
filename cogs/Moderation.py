@@ -255,12 +255,18 @@ class Moderation(commands.Cog):
     @moderation_check()
     async def watchlist_view(self, ctx: commands.Context):
         watchlist = self.bot.get_data(ctx.guild.id, 'watchlist', [])
+        member_converter = commands.MemberConverter()
         embeds = []
         for i in range(len(watchlist)//5 + 1):
             embed = discord.Embed(title='watchlist', color=0xFF00FF)
             for member_id, reason in watchlist[i*5:(i+1)*5]:
-                member_converter = commands.MemberConverter()
-                member = await member_converter.convert(ctx, str(member_id))
+                try: 
+                    member = await member_converter.convert(ctx, str(member_id))
+                except commands.BadArgument:
+                    updated_watchlist = watchlist.copy()
+                    updated_watchlist.pop([m[0] for m in updated_watchlist].index(member_id))
+                    self.bot.set_data(ctx.guild.id, 'watchlist', updated_watchlist)
+                    continue
                 embed.add_field(name='{member.name} ({member.id})'.format(member=member),
                                 value=reason if reason is not '' else '*no reason was specified*')
             embeds.append(embed)
