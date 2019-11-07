@@ -2,6 +2,7 @@ import random
 from discord.ext import commands
 from main import ACoolBot
 import discord
+import asyncio
 
 
 def owner_check():
@@ -776,6 +777,10 @@ class Fun(commands.Cog):
                 overwrite.update(connect=True)
                 await ctx.author.voice.channel.set_permissions(member, overwrite=overwrite)
                 await member.move_to(ctx.author.voice.channel)
+                try:
+                    await asyncio.sleep(2)
+                except asyncio.TimeoutError:
+                    pass
                 await ctx.author.voice.channel.set_permissions(member, overwrite=None)
 
 
