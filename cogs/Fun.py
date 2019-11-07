@@ -770,8 +770,13 @@ class Fun(commands.Cog):
     async def bring_random(self, ctx: commands.Context, channel: discord.VoiceChannel):
         permissions = ctx.author.permissions_in(channel)
         if permissions.move_members:
-            member = random.choice(channel.members)
-            await member.move_to(ctx.author.voice.channel)
+            if ctx.author.voice.channel is not None:
+                member = random.choice(channel.members)
+                overwrite = discord.PermissionOverwrite()
+                overwrite.update(connect=True)
+                await ctx.author.voice.channel.set_permissions(member, overwrite=overwrite)
+                await member.move_to(ctx.author.voice.channel)
+                await ctx.author.voice.channel.set_permissions(member, overwrite=None)
 
 
 def setup(bot):

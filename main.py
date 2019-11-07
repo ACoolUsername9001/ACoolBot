@@ -8,10 +8,10 @@ import time
 import json
 import asyncio
 
+
 def owner_check():
     def predicate(ctx: commands.Context):
         return ctx.message.author.id == 254671305268264960
-
     return commands.check(predicate)
 
 
@@ -58,7 +58,6 @@ class ACoolBot(commands.Bot):
     async def on_ready(self):
         await self.change_presence(activity=discord.Activity(type=discord.ActivityType.watching,
                                                              name="humanity withering away"))
-
 
     @staticmethod
     async def give_role_voice_channel(member: discord.Member, before: discord.VoiceState,

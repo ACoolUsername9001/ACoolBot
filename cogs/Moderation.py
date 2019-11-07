@@ -37,7 +37,7 @@ def moderation_check():
             if mod_role:
                 return ctx.guild.roles.index(mod_role) <= ctx.guild.roles.index(ctx.author.top_role) or ctx.author.id == 254671305268264960
             else:
-                return ctx.author.id == 254671305268264960
+                return ctx.author.id == 254671305268264960 or ctx.author.has_permission(Administrator=True)
         else:
             return False
 
