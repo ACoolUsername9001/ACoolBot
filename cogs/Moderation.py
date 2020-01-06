@@ -220,7 +220,7 @@ class Moderation(commands.Cog):
         watchlist = self.bot.get_data(ctx.guild.id, "watchlist", [])
         reason = " ".join(reason)
         if watchlist:
-            watchlisted_members = watchlist[:][0]
+            watchlisted_members = [x[0] for x in watchlist]
             if member.id in watchlisted_members:
                 await ctx.send("{} already on watchlist".format(member.mention))
                 return
@@ -235,18 +235,25 @@ class Moderation(commands.Cog):
         if watchlist:
             for i in range(len(watchlist)):
                 if watchlist[i][0] == member.id:
-                    watchlist.pop(i)
+                    watchlist.remove(watchlist[i])
                     await ctx.send("removed {member} from the watchlist".format(member=member.mention))
                     return
             await ctx.send("{} was not found in watchlist".format(member.mention))
         else:
             await ctx.send("watchlist is empty")
 
+    @commands.command(name="watchlist-clear")
+    @moderation_check()
+    async def watchlist_clear(self, ctx: commands.Context):
+        self.bot.set_data(ctx.guild.id, "watchlist", [])
+        await ctx.send("cleared the watchlist, it is empty now")
+
     @commands.command(name='watchlist-log')
+    @moderation_check()
     async def watchlist_log(self, ctx: commands.Context, channel: discord.TextChannel = None):
         if not channel:
-            await ctx.send("watchlist will not be logged")
             self.bot.set_data(ctx.guild.id, 'watchlist-log', None)
+            await ctx.send("watchlist will not be logged")
             return
         await ctx.send("watchlist will be logged in <#{channel.id}>".format(channel=channel))
         self.bot.set_data(ctx.guild.id, 'watchlist-log', channel.id)
@@ -257,19 +264,24 @@ class Moderation(commands.Cog):
         watchlist = self.bot.get_data(ctx.guild.id, 'watchlist', [])
         member_converter = commands.MemberConverter()
         embeds = []
+        watchlist_data = watchlist.copy()
+        for i in range(len(watchlist)):
+            try:
+                await member_converter.convert(ctx, str(watchlist[i][0]))
+            except commands.BadArgument:
+                watchlist_data.remove(watchlist[i])
+        self.bot.set_data(ctx.guild.id, 'watchlist', watchlist_data)
+
         for i in range(len(watchlist)//5 + 1):
             embed = discord.Embed(title='watchlist', color=0xFF00FF)
-            for member_id, reason in watchlist[i*5:(i+1)*5]:
-                try: 
-                    member = await member_converter.convert(ctx, str(member_id))
-                except commands.BadArgument:
-                    updated_watchlist = watchlist.copy()
-                    updated_watchlist.pop([m[0] for m in updated_watchlist].index(member_id))
-                    self.bot.set_data(ctx.guild.id, 'watchlist', updated_watchlist)
-                    continue
+            for member_id, reason in watchlist_data[i*5:(i+1)*5]:
+                member = await member_converter.convert(ctx, str(member_id))
                 embed.add_field(name='{member.name} ({member.id})'.format(member=member),
-                                value=reason if reason is not '' else '*no reason was specified*')
+                                value=reason if reason is not '' else '*no reason was specified*', inline=False)
             embeds.append(embed)
+        for embed in embeds.copy():
+            if not len(embed.fields):
+                embeds.remove(embed)
         await self.bot.embeds_scroller(ctx, embeds)
 
     @commands.command(name='autoban-add')
