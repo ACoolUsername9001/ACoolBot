@@ -100,23 +100,6 @@ class Abuse(commands.Cog):
         for i in range(num):
             await ctx.send(message)
 
-    @commands.command()
-    @owner_check()
-    async def join(self, ctx, *, channel: discord.VoiceChannel):
-        """Joins a voice channel"""
-
-        if ctx.voice_client is not None:
-            return await ctx.voice_client.move_to(channel)
-
-        await channel.connect()
-
-    @commands.command()
-    @owner_check()
-    async def leave(self, ctx):
-        """Stops and disconnects the bot from voice"""
-
-        await ctx.voice_client.disconnect()
-
     @commands.command(name="dump-data")
     @owner_check()
     async def dump_data(self, ctx: commands.Context):

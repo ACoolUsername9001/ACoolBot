@@ -34,6 +34,7 @@ class ACoolBot(commands.Bot):
         self.data = json.load(open('data.json'))
         self.add_command(self.reload_cogs)
         self.add_command(self.invite)
+        self.add_command(self.leave)
 
     def command_prefix(self, bot, message: discord.Message):
         if not message.guild:
@@ -314,6 +315,12 @@ class ACoolBot(commands.Bot):
     async def invite(ctx: commands.Context):
         await ctx.send(
             'https://discordapp.com/oauth2/authorize?&client_id={}&scope=bot&permissions=8'.format(ctx.bot.user.id))
+
+    @staticmethod
+    @commands.command(name='leave')
+    @owner_check()
+    async def leave(ctx: commands.Context):
+        await ctx.guild.leave()
 
     @staticmethod
     def is_admin(author: discord.Member):
