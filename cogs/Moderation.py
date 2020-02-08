@@ -219,11 +219,17 @@ class Moderation(commands.Cog):
     async def watchlist_add(self, ctx: commands.Context, member: discord.Member, *reason: str):
         watchlist = self.bot.get_data(ctx.guild.id, "watchlist", [])
         reason = " ".join(reason)
+
         if watchlist:
             watchlisted_members = [x[0] for x in watchlist]
             if member.id in watchlisted_members:
                 await ctx.send("{} already on watchlist".format(member.mention))
                 return
+
+        if reason is '':
+            await ctx.send('You must specify a reason for being on a watchlist')
+            return
+
         watchlist.append((member.id, reason))
         self.bot.set_data(ctx.guild.id, "watchlist", watchlist)
         await ctx.send("added {member} to watchlist".format(member=member.mention))
@@ -241,6 +247,12 @@ class Moderation(commands.Cog):
             await ctx.send("{} was not found in watchlist".format(member.mention))
         else:
             await ctx.send("watchlist is empty")
+
+    @commands.command(name='watchlist-clean')
+    @moderation_check()
+    async def watchlist_clean(self, ctx: commands.Context):
+        self.bot.set_data(ctx.guild.id, "watchlist", [])
+        await ctx.send('Watchlist is cleansed')
 
     @commands.command(name="watchlist-clear")
     @moderation_check()
