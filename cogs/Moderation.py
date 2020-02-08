@@ -248,12 +248,6 @@ class Moderation(commands.Cog):
         else:
             await ctx.send("watchlist is empty")
 
-    @commands.command(name='watchlist-clean')
-    @moderation_check()
-    async def watchlist_clean(self, ctx: commands.Context):
-        self.bot.set_data(ctx.guild.id, "watchlist", [])
-        await ctx.send('Watchlist is cleansed')
-
     @commands.command(name="watchlist-clear")
     @moderation_check()
     async def watchlist_clear(self, ctx: commands.Context):
