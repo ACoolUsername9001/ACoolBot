@@ -90,8 +90,7 @@ class ACoolBot(commands.Bot):
     async def on_voice_state_update(self, member: discord.Member, before: discord.VoiceState,
                                     after: discord.VoiceState):
         if before.channel is not None:
-            if before.channel.category.name is not 'TEMP VOICE':
-                await self.give_role_voice_channel(member, before, after)
+            await self.give_role_voice_channel(member, before, after)
         else:
             await self.give_role_voice_channel(member, before, after)
         if member.guild.afk_channel and after.channel is not None and after.channel is not member.guild.afk_channel and\
