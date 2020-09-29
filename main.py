@@ -75,11 +75,11 @@ class ACoolBot(commands.Bot):
                                         after.channel.guild.roles)
             if after_role is None:
                 after_role = await after.channel.guild.create_role(name=after.channel.name)
-        else:
-            before_role = utils.find(lambda r: r.name == before.channel.name, before.channel.guild.roles)
+
         roles = member.roles
 
         if before.channel is not None:
+            before_role = utils.find(lambda r: r.name == before.channel.name, roles)
             if before_role in roles:
                 await member.remove_roles(before_role, reason='voice connectivity')
 
@@ -374,6 +374,7 @@ if __name__ == '__main__':
     intents.typing = False
     intents.presences = False
     intents.bans = False
+    intents.members = True
 
     bot = ACoolBot(intents=intents)
     key = json.load(open('DiscordKey.json'))
