@@ -89,19 +89,13 @@ class ACoolBot(commands.Bot):
 
     async def on_voice_state_update(self, member: discord.Member, before: discord.VoiceState,
                                     after: discord.VoiceState):
-        if before.channel is not None:
-            await self.give_role_voice_channel(member, before, after)
-        else:
-            await self.give_role_voice_channel(member, before, after)
-        if member.guild.afk_channel and after.channel is not None and after.channel is not member.guild.afk_channel and\
-                member.id in self.get_data(member.guild.id, "afk purgatory", []):
-            await member.move_to(member.guild.afk_channel)
+        await self.give_role_voice_channel(member, before, after)
         # await self.create_channel_type(member, before, after)
 
     async def create_channel_type(self, member: discord.Member, before: discord.VoiceState, after: discord.VoiceState):
 
         if before.channel is not None:
-            if len(before.channel.members) is 0:
+            if len(before.channel.members) == 0:
                 type = before.channel.name.strip(' I')
                 voice_channels = list(filter(lambda c: type == c.name.strip(' I') and len(c.members) == 0,
                                              member.guild.channels.copy()))
@@ -349,7 +343,7 @@ class ACoolBot(commands.Bot):
                 if user is not self:
                     await message.remove_reaction(reaction, user)
 
-                if user is ctx.author:
+                if user == ctx.author:
                     index = self.pages[message.id] % len(embeds)
                     embeds[index].set_footer(text='page: {page}/{total}'.format(page=self.pages[message.id]
                                                                                 % len(embeds) + 1,
@@ -376,6 +370,11 @@ class ACoolBot(commands.Bot):
 
 
 if __name__ == '__main__':
-    bot = ACoolBot()
+    intents = discord.Intents.default()
+    intents.typing = False
+    intents.presences = False
+    intents.bans = False
+
+    bot = ACoolBot(intents=intents)
     key = json.load(open('DiscordKey.json'))
     bot.run(key["key"])
