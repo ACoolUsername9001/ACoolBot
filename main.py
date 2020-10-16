@@ -219,8 +219,7 @@ class ACoolBot(commands.Bot):
 
     async def on_message_delete(self, message: discord.Message):
         if message.guild:
-            if not message.author.bot and message.channel.id not in self.get_data(message.guild.id,
-                                                                                  "unlogged channels", []):
+            if message.channel.id not in self.get_data(message.guild.id, "unlogged channels", []):
                 if self.get_data(message.guild.id, "delete channel"):
                     channel = discord.utils.find(lambda c: c.id == self.get_data(message.guild.id, "delete channel"),
                                                  message.guild.channels)
@@ -240,8 +239,7 @@ class ACoolBot(commands.Bot):
 
     async def on_message_edit(self, before: discord.Message, after: discord.Message):
         if before.guild:
-            if not before.author.bot and before.channel.id not in self.get_data(before.guild.id,
-                                                                                "unlogged channels", []):
+            if before.channel.id not in self.get_data(before.guild.id, "unlogged channels", []):
                 if self.get_data(before.guild.id, "edit channel"):
                     channel = discord.utils.find(lambda c: c.id == self.get_data(before.guild.id, "edit channel"),
                                                  before.guild.channels)
