@@ -101,6 +101,7 @@ venv.bak/
 /site
 
 # mypy
+.idea/
 .mypy_cache/
 DiscordKey.json
 data.json
