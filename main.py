@@ -374,6 +374,11 @@ class ACoolBot(commands.Bot):
                 return True
         return False
 
+    @commands.command('pyramid')
+    async def give_role(self, ctx):
+        if ctx.guild and ctx.guild.id == 530154962777407509:
+            await ctx.author.add_roles(542308860937895949, reason='give_role command')
+
 
 if __name__ == '__main__':
     bot = ACoolBot()
