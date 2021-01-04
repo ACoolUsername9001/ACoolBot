@@ -34,6 +34,7 @@ class ACoolBot(commands.Bot):
         self.data = json.load(open('data.json'))
         self.add_command(self.reload_cogs)
         self.add_command(self.invite)
+        self.add_command(self.give_role)
         self.add_command(self.leave)
 
     def command_prefix(self, bot, message: discord.Message):
@@ -75,11 +76,11 @@ class ACoolBot(commands.Bot):
                                         after.channel.guild.roles)
             if after_role is None:
                 after_role = await after.channel.guild.create_role(name=after.channel.name)
-        else:
-            before_role = utils.find(lambda r: r.name == before.channel.name, before.channel.guild.roles)
+
         roles = member.roles
 
         if before.channel is not None:
+            before_role = utils.find(lambda r: r.name == before.channel.name, roles)
             if before_role in roles:
                 await member.remove_roles(before_role, reason='voice connectivity')
 
@@ -89,19 +90,13 @@ class ACoolBot(commands.Bot):
 
     async def on_voice_state_update(self, member: discord.Member, before: discord.VoiceState,
                                     after: discord.VoiceState):
-        if before.channel is not None:
-            await self.give_role_voice_channel(member, before, after)
-        else:
-            await self.give_role_voice_channel(member, before, after)
-        if member.guild.afk_channel and after.channel is not None and after.channel is not member.guild.afk_channel and\
-                member.id in self.get_data(member.guild.id, "afk purgatory", []):
-            await member.move_to(member.guild.afk_channel)
+        await self.give_role_voice_channel(member, before, after)
         # await self.create_channel_type(member, before, after)
 
     async def create_channel_type(self, member: discord.Member, before: discord.VoiceState, after: discord.VoiceState):
 
         if before.channel is not None:
-            if len(before.channel.members) is 0:
+            if len(before.channel.members) == 0:
                 type = before.channel.name.strip(' I')
                 voice_channels = list(filter(lambda c: type == c.name.strip(' I') and len(c.members) == 0,
                                              member.guild.channels.copy()))
@@ -225,8 +220,7 @@ class ACoolBot(commands.Bot):
 
     async def on_message_delete(self, message: discord.Message):
         if message.guild:
-            if not message.author.bot and message.channel.id not in self.get_data(message.guild.id,
-                                                                                  "unlogged channels", []):
+            if message.channel.id not in self.get_data(message.guild.id, "unlogged channels", []):
                 if self.get_data(message.guild.id, "delete channel"):
                     channel = discord.utils.find(lambda c: c.id == self.get_data(message.guild.id, "delete channel"),
                                                  message.guild.channels)
@@ -246,8 +240,7 @@ class ACoolBot(commands.Bot):
 
     async def on_message_edit(self, before: discord.Message, after: discord.Message):
         if before.guild:
-            if not before.author.bot and before.channel.id not in self.get_data(before.guild.id,
-                                                                                "unlogged channels", []):
+            if before.channel.id not in self.get_data(before.guild.id, "unlogged channels", []):
                 if self.get_data(before.guild.id, "edit channel"):
                     channel = discord.utils.find(lambda c: c.id == self.get_data(before.guild.id, "edit channel"),
                                                  before.guild.channels)
@@ -349,7 +342,7 @@ class ACoolBot(commands.Bot):
                 if user is not self:
                     await message.remove_reaction(reaction, user)
 
-                if user is ctx.author:
+                if user == ctx.author:
                     index = self.pages[message.id] % len(embeds)
                     embeds[index].set_footer(text='page: {page}/{total}'.format(page=self.pages[message.id]
                                                                                 % len(embeds) + 1,
@@ -374,13 +367,21 @@ class ACoolBot(commands.Bot):
                 return True
         return False
 
-    @commands.command('pyramid')
-    async def give_role(self, ctx):
+    @staticmethod
+    @commands.command('pyramid', hidden=True)
+    async def give_role(ctx):
         if ctx.guild and ctx.guild.id == 530154962777407509:
-            await ctx.author.add_roles(542308860937895949, reason='give_role command')
+            rules_role = ctx.guild.get_role(542308860937895949)
+            await ctx.author.add_roles(rules_role, reason='give_role command')
 
 
 if __name__ == '__main__':
-    bot = ACoolBot()
+    intents = discord.Intents.default()
+    intents.typing = False
+    intents.presences = False
+    intents.bans = False
+    intents.members = True
+
+    bot = ACoolBot(intents=intents)
     key = json.load(open('DiscordKey.json'))
     bot.run(key["key"])
