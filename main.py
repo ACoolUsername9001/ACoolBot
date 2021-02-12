@@ -382,6 +382,6 @@ if __name__ == '__main__':
     intents.bans = False
     intents.members = True
 
-    bot = ACoolBot(intents=intents)
+    bot = ACoolBot(intents=intents, max_messages=10000)
     key = json.load(open('DiscordKey.json'))
     bot.run(key["key"])
