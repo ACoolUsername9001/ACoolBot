@@ -1,55 +1,9 @@
-import random
 from discord.ext import commands
+
+from cogs.checks import moderation_check, higher_role_check
 from main import ACoolBot
 import discord
-import json
 import datetime
-
-
-def get_data(gid: int, name, default=None, data=json.load(open('data.json'))):
-    try:
-        return data[str(gid)][name]
-    except KeyError:
-        set_data(gid, name, default)
-        return data[str(gid)][name]
-
-
-def owner_check():
-    def predicate(ctx: commands.Context):
-        return ctx.message.author.id == 254671305268264960
-    return commands.check(predicate)
-
-
-def set_data(gid: int, name: str, val, data=json.load(open('data.json'))):
-    try:
-        data[str(gid)].update({name: val})
-    except KeyError:
-        data.update({str(gid): {name: val}})
-    json.dump(data, open('data.json', 'w'))
-
-
-def moderation_check():
-    def predicate(ctx: commands.Context):
-        if ctx.guild:
-            mod_role_id = get_data(ctx.guild.id, 'mod role', '')
-            mod_role = discord.utils.find(lambda r: r.id == mod_role_id,
-                                          ctx.guild.roles)
-            if mod_role:
-                return ctx.guild.roles.index(mod_role) <= ctx.guild.roles.index(ctx.author.top_role) or ctx.author.id == 254671305268264960
-            else:
-                return ctx.author.id == 254671305268264960 or ctx.author.guild_permissions.administrator == True
-
-    return commands.check(predicate)
-
-
-def higher_role_check():
-    def predicate(ctx: commands.Context):
-        if ctx.guild:
-            return ctx.guild.roles.index(ctx.author.roles[-1]) > ctx.guild.roles.index(ctx.author.roles[-1]) or \
-                   ctx.author.id == 254671305268264960
-        return False
-
-    return commands.check(predicate)
 
 
 class Moderation(commands.Cog):
@@ -307,6 +261,31 @@ class Moderation(commands.Cog):
             autoban_list.pop(autoban_list.index(member_id))
             return await ctx.send('member was removed from the list')
         return await ctx.send('member was not found in the autoban list')
+
+    @commands.command(name='bot-channel-add')
+    @moderation_check()
+    async def add_bot_channel(self, ctx: commands.Context, channels: commands.Greedy[discord.TextChannel]):
+        bot_channels = self.bot.get_data(ctx.guild.id, 'bot channels', [])
+        bot_channels.extend([c.id for c in channels])
+        self.bot.set_data(ctx.guild.id, 'bot channels', bot_channels)
+        await ctx.send('removed channels: {} from bot channels'.format(', '.join([c.mention for c in channels])))
+
+    @commands.command(name='bot-channel-remove')
+    @moderation_check()
+    async def remove_bot_channel(self, ctx: commands.Context, channels: commands.Greedy[discord.TextChannel]):
+        bot_channels = self.bot.get_data(ctx.guild.id, 'bot channels', [])
+        for channel in channels:
+            if channel.id in bot_channels:
+                bot_channels.remove(channel.id)
+        self.bot.set_data(ctx.guild.id, 'bot channels', bot_channels)
+        await ctx.send('removed channels: {} from bot channels'.format(', '.join([c.mention for c in channels])))
+
+    @commands.command(name='bot-channel-view')
+    @moderation_check()
+    async def view_bot_channel(self, ctx: commands.Context):
+        bot_channels = self.bot.get_data(ctx.guild.id, 'bot channels', [])
+        await ctx.send('active bot channels: {}'.format(', '.join(['<#{}>'.format(c) for c in bot_channels])))
+
 
 def setup(bot):
     bot.add_cog(Moderation(bot))

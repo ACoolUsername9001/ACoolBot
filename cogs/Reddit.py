@@ -8,9 +8,13 @@ class Reddit(commands.Cog):
 
     def __init__(self, bot: commands.bot):
         self.bot = bot
-        self.reddit = praw.Reddit(client_id = 'LpZyJEaCETTdow',
-                                client_secret='CQt3JwPhuqyCkgvMHJClVxKIzbs',
-                                user_agent='ACoolBot')
+        self.reddit = praw.Reddit(client_id='LpZyJEaCETTdow',
+                                  client_secret='CQt3JwPhuqyCkgvMHJClVxKIzbs',
+                                  user_agent='ACoolBot')
+
+    def cog_check(self, ctx: commands.Context):
+        return ctx.channel.id in self.bot.get_data(ctx.guild.id, 'bot channels', [])
+
     @staticmethod
     def sub2embeds(sub):
         embeds = []
@@ -55,8 +59,7 @@ class Reddit(commands.Cog):
         return embeds
 
     @commands.command()
-    @commands.bot_has_permissions(add_reactions=True, embed_links=True,
-                         read_message_history=True)
+    @commands.bot_has_permissions(add_reactions=True, embed_links=True, read_message_history=True)
     async def hot(self,ctx: commands.Context, subreddit: str, limit:int = 20):
         sub = self.reddit.subreddit(subreddit).hot(limit=limit)
         embeds = self.sub2embeds(sub)
@@ -67,8 +70,7 @@ class Reddit(commands.Cog):
         await self.bot.embeds_scroller(ctx, embeds)
 
     @commands.command()
-    @commands.bot_has_permissions(add_reactions=True, embed_links=True,
-                                  read_message_history=True)
+    @commands.bot_has_permissions(add_reactions=True, embed_links=True, read_message_history=True)
     async def new(self,ctx: commands.Context, subreddit: str, limit: int = 20):
         sub = self.reddit.subreddit(subreddit).new(limit=limit)
         embeds = self.sub2embeds(sub)

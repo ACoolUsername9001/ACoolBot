@@ -8,11 +8,7 @@ import time
 import json
 import asyncio
 
-
-def owner_check():
-    def predicate(ctx: commands.Context):
-        return ctx.message.author.id == 254671305268264960
-    return commands.check(predicate)
+from cogs.checks import owner_check
 
 
 class ACoolBot(commands.Bot):

@@ -3,12 +3,7 @@ from discord.ext import commands
 from main import ACoolBot
 import discord
 import asyncio
-
-
-def owner_check():
-    def predicate(ctx: commands.Context):
-          return ctx.message.author.id == 254671305268264960
-    return commands.check(predicate)
+from cogs.checks import owner_check
 
 
 class Fun(commands.Cog):
@@ -16,6 +11,9 @@ class Fun(commands.Cog):
     def __init__(self, bot: ACoolBot):
         self.bot = bot
         self.pages = {}
+
+    def cog_check(self, ctx: commands.Context):
+        return ctx.channel.id in self.bot.get_data(ctx.guild.id, 'bot channels', [])
 
     @commands.command(name='roll')
     async def roll(self, ctx: commands.Context, *dice: str):

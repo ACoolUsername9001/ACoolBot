@@ -1,31 +1,9 @@
 from discord.ext import commands
+
+from cogs.checks import owner_check
 from main import ACoolBot
 import discord
-import json
 import random
-
-
-def get_data(gid: int, name, default=None, data=json.load(open('data.json'))):
-    try:
-        return data[str(gid)][name]
-    except KeyError:
-        set_data(gid, name, default)
-        return data[str(gid)][name]
-
-
-def set_data(gid: int, name: str, val, data=json.load(open('data.json'))):
-    try:
-        data[str(gid)].update({name: val})
-    except KeyError:
-        data.update({str(gid): {name: val}})
-    json.dump(data, open('data.json', 'w'))
-
-
-def owner_check():
-    def predicate(ctx: commands.Context):
-        return ctx.message.author.id == 254671305268264960
-
-    return commands.check(predicate)
 
 
 class Abuse(commands.Cog):

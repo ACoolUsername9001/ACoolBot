@@ -1,4 +1,6 @@
 import asyncio
+
+from cogs.checks import owner_check
 from main import ACoolBot
 import discord
 import youtube_dl
@@ -7,13 +9,6 @@ from discord.ext import commands
 
 # Suppress noise about console usage from errors
 youtube_dl.utils.bug_reports_message = lambda: ''
-
-
-def owner_check():
-    def predicate(ctx: commands.Context):
-        return ctx.message.author.id == 254671305268264960
-
-    return commands.check(predicate)
 
 ytdl_format_options = {
     'format': 'bestaudio/best',
