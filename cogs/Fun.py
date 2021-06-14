@@ -67,6 +67,7 @@ class Fun(commands.Cog):
             await ctx.author.send("By using this command you agreed to being fully aware of the rules")
 
     @commands.command(name='big', aliases=['BIG', 'b', 'B'])
+    @owner_check()
     async def big(self, ctx: commands.Context, *string: str):
         string = ' '.join(string).upper()
         if string[0] in 'אבגדהוזחטיכלמנסעפצקרשתץךףםן':
@@ -766,6 +767,7 @@ class Fun(commands.Cog):
         await ctx.send(output)
 
     @commands.command('bring-random', aliases=['br'])
+    @owner_check()
     async def bring_random(self, ctx: commands.Context, channel: discord.VoiceChannel):
         permissions = ctx.author.permissions_in(channel)
         if permissions.move_members:

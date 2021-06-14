@@ -11,6 +11,10 @@ import asyncio
 from cogs.checks import owner_check
 
 
+def join_attachment_urls(attachments: [discord.Attachment]):
+    return '\n'.join(map(lambda a: a.url, attachments))
+
+
 class ACoolBot(commands.Bot):
 
     def __init__(self, **options):
@@ -218,18 +222,20 @@ class ACoolBot(commands.Bot):
         if message.guild:
             if message.channel.id not in self.get_data(message.guild.id, "unlogged channels", []):
                 if self.get_data(message.guild.id, "delete channel"):
+                    if not message.content:
+                        return
+
                     channel = discord.utils.find(lambda c: c.id == self.get_data(message.guild.id, "delete channel"),
                                                  message.guild.channels)
                     description = '**User:** {} `[{}]`\n**Channel:** {} `[{}]`\n{}'.format(message.author.mention,
                                                                                            message.author.name,
                                                                                            message.channel.mention,
                                                                                            message.channel.name,
-                                                                                           message.content)
+                                                                                           message.content if message.content else 'ACoolBot failed to get message data')
                     embed = discord.Embed(title='Deleted Message', color=int('0xFF0000', 16), description=description,
                                           type='rich')
                     if message.attachments:
-                        embed.add_field(name='**Attachments:** ', value='\n'.join([a.proxy_url
-                                                                                   for a in message.attachments]))
+                        embed.add_field(name='**Attachments:** ', value='\n'.join((a.proxy_url for a in message.attachments)))
                     embed.set_footer(text='Message ID: ' + str(message.id))
                     embed.timestamp = message.created_at
                     await channel.send(embed=embed)
@@ -238,6 +244,8 @@ class ACoolBot(commands.Bot):
         if before.guild:
             if before.channel.id not in self.get_data(before.guild.id, "unlogged channels", []):
                 if self.get_data(before.guild.id, "edit channel"):
+                    if before.content == after.content and join_attachment_urls(before.attachments) == join_attachment_urls(after.attachments):
+                        return
                     channel = discord.utils.find(lambda c: c.id == self.get_data(before.guild.id, "edit channel"),
                                                  before.guild.channels)
                     description = '**User:** {} `[{}]`\n**Channel:** {} `[{}]`'.format(before.author.mention,
@@ -246,12 +254,18 @@ class ACoolBot(commands.Bot):
                                                                                        before.channel.name)
                     embed = discord.Embed(title='Edited Message', color=int('0x00FF00', 16), description=description,
                                           type='rich')
-                    embed.add_field(name='**before**', value=before.content)
+                    if before.content:
+                        embed.add_field(name='**before**', value=before.content, inline=False)
+
+                    if after.content:
+                        embed.add_field(name='**after**', value=after.content, inline=False)
+
                     if before.attachments:
-                        embed.add_field(name='**Attachments:** ', value='\n'.join(before.attachments))
-                    embed.add_field(name='**after**', value=after.content)
+                        embed.add_field(name='**Before Attachments:** ', value=join_attachment_urls(before.attachments), inline=False)
+
                     if after.attachments:
-                        embed.add_field(name='**Attachments:** ', value='\n'.join(after.attachments))
+                        embed.add_field(name='**After Attachments:** ', value=join_attachment_urls(after.attachments), inline=False)
+
                     embed.set_footer(text='Message ID: ' + str(after.id))
                     if after.edited_at:
                         embed.timestamp = after.edited_at
