@@ -8,7 +8,9 @@ import time
 import json
 import asyncio
 
-from cogs.checks import owner_check
+from discord.ext.commands import DefaultHelpCommand
+
+from cogs.checks import owner_check, in_bot_channel
 
 
 def join_attachment_urls(attachments: [discord.Attachment]):
@@ -35,6 +37,7 @@ class ACoolBot(commands.Bot):
         self.add_command(self.invite)
         self.add_command(self.give_role)
         self.add_command(self.leave)
+        self.help_command.add_check(in_bot_channel)
 
     def command_prefix(self, bot, message: discord.Message):
         if not message.guild:

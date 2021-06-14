@@ -52,3 +52,9 @@ def higher_role_check():
         return False
 
     return commands.check(predicate)
+
+
+def in_bot_channel(ctx: commands.Context):
+    if ctx.guild:
+        return ctx.channel.id in get_data(ctx.guild.id, 'bot channels', [])
+    return True
