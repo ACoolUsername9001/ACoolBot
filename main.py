@@ -30,7 +30,6 @@ class ACoolBot(commands.Bot):
         self.pages = {}
         for extension in self.all_cogs:
             self.load_extension(extension)
-        # self.add_command(self.invite)
         self.data = json.load(open('data.json'))
         self.add_command(self.reload_cogs)
         self.add_command(self.invite)
