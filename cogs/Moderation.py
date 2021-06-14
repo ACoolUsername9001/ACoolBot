@@ -81,10 +81,13 @@ class Moderation(commands.Cog):
         channels = self.bot.get_data(ctx.guild.id, "admin only channels", [])
         if channel.id not in channels:
             channels.append(channel.id)
+            if channel.id not in self.bot.get_data(ctx.guild.id, 'unlogged channels', []):
+                await ctx.invoke(self.dont_log, channel)
         else:
             channels.pop(channels.index(channel.id))
+            if channel.id in self.bot.get_data(ctx.guild.id, 'unlogged channels', []):
+                await ctx.invoke(self.dont_log, channel)
         self.bot.set_data(ctx.guild.id, "admin only channels", channels)
-        await ctx.invoke(self.dont_log, channel)
 
     @commands.command(name="don't-log", aliases=('dont-log', 'dl'))
     @moderation_check()
@@ -267,8 +270,9 @@ class Moderation(commands.Cog):
     async def add_bot_channel(self, ctx: commands.Context, channels: commands.Greedy[discord.TextChannel]):
         bot_channels = self.bot.get_data(ctx.guild.id, 'bot channels', [])
         bot_channels.extend([c.id for c in channels])
+        bot_channels = list(set(bot_channels))
         self.bot.set_data(ctx.guild.id, 'bot channels', bot_channels)
-        await ctx.send('removed channels: {} from bot channels'.format(', '.join([c.mention for c in channels])))
+        await ctx.send('added channels: {} from bot channels'.format(', '.join([c.mention for c in channels])))
 
     @commands.command(name='bot-channel-remove')
     @moderation_check()
