@@ -224,16 +224,13 @@ class ACoolBot(commands.Bot):
         if message.guild:
             if message.channel.id not in self.get_data(message.guild.id, "unlogged channels", []):
                 if self.get_data(message.guild.id, "delete channel"):
-                    if not message.content:
-                        return
-
                     channel = discord.utils.find(lambda c: c.id == self.get_data(message.guild.id, "delete channel"),
                                                  message.guild.channels)
                     description = '**User:** {} `[{}]`\n**Channel:** {} `[{}]`\n{}'.format(message.author.mention,
                                                                                            message.author.name,
                                                                                            message.channel.mention,
                                                                                            message.channel.name,
-                                                                                           message.content if message.content else 'ACoolBot failed to get message data')
+                                                                                           message.content if message.content else '[message data is missing or nonexistent]')
                     embed = discord.Embed(title='Deleted Message', color=int('0xFF0000', 16), description=description,
                                           type='rich')
                     if message.attachments:
