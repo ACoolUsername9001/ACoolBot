@@ -273,7 +273,7 @@ class ACoolBot(commands.Bot):
     @staticmethod
     @commands.command(name='reload-cogs', aliases=['rc', 'reload'])
     @owner_check()
-    async def reload_cogs(ctx):
+    async def reload_cogs(ctx, intention):
         for cog in ctx.bot.all_cogs:
             try:
                 ctx.bot.unload_extension(cog)
@@ -313,14 +313,14 @@ class ACoolBot(commands.Bot):
     @staticmethod
     @commands.command(name='invite')
     @owner_check()
-    async def invite(ctx: commands.Context):
+    async def invite(ctx: commands.Context, intention):
         await ctx.send(
             'https://discordapp.com/oauth2/authorize?&client_id={}&scope=bot&permissions=8'.format(ctx.bot.user.id))
 
     @staticmethod
     @commands.command(name='leave')
     @owner_check()
-    async def leave(ctx: commands.Context):
+    async def leave(ctx: commands.Context, intention):
         await ctx.guild.leave()
 
     @staticmethod
@@ -378,7 +378,7 @@ class ACoolBot(commands.Bot):
 
     @staticmethod
     @commands.command('pyramid', hidden=True)
-    async def give_role(ctx):
+    async def give_role(ctx, intention):
         if ctx.guild and ctx.guild.id == 530154962777407509:
             rules_role = ctx.guild.get_role(542308860937895949)
             await ctx.author.add_roles(rules_role, reason='give_role command')
@@ -390,6 +390,7 @@ if __name__ == '__main__':
     intents.presences = False
     intents.bans = False
     intents.members = True
+    intents.messages = True
 
     bot = ACoolBot(intents=intents, max_messages=10000, owner_id=254671305268264960)
     key = json.load(open('DiscordKey.json'))
