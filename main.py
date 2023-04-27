@@ -31,7 +31,7 @@ class ACoolBot(commands.Bot):
         ]
         self.pages = {}
         for extension in self.all_cogs:
-            self.load_extension(extension)
+            await self.load_extension(extension)
         self.data = json.load(open('data.json'))
         self.add_command(self.reload_cogs)
         self.add_command(self.invite)
@@ -276,10 +276,10 @@ class ACoolBot(commands.Bot):
     async def reload_cogs(ctx, intention):
         for cog in ctx.bot.all_cogs:
             try:
-                ctx.bot.unload_extension(cog)
+                await ctx.bot.unload_extension(cog)
             except commands.ExtensionNotLoaded:
                 pass
-            ctx.bot.load_extension(cog)
+            await ctx.bot.load_extension(cog)
         await ctx.send('Done!')
 
     async def on_message(self, message: discord.Message):
