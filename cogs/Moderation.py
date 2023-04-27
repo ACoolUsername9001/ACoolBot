@@ -181,7 +181,7 @@ class Moderation(commands.Cog):
                 await ctx.send("{} already on watchlist".format(member.mention))
                 return
 
-        if reason is '':
+        if reason == '':
             await ctx.send('You must specify a reason for being on a watchlist')
             return
 
@@ -238,7 +238,7 @@ class Moderation(commands.Cog):
             for member_id, reason in watchlist_data[i*5:(i+1)*5]:
                 member = await member_converter.convert(ctx, str(member_id))
                 embed.add_field(name='{member.name} ({member.id})'.format(member=member),
-                                value=reason if reason is not '' else '*no reason was specified*', inline=False)
+                                value=reason if reason != '' else '*no reason was specified*', inline=False)
             embeds.append(embed)
         for embed in embeds.copy():
             if not len(embed.fields):
@@ -291,5 +291,5 @@ class Moderation(commands.Cog):
         await ctx.send('active bot channels: {}'.format(', '.join(['<#{}>'.format(c) for c in bot_channels])))
 
 
-def setup(bot):
-    bot.add_cog(Moderation(bot))
+async def setup(bot):
+    await bot.add_cog(Moderation(bot))

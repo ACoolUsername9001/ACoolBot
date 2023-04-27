@@ -30,8 +30,6 @@ class ACoolBot(commands.Bot):
             'cogs.Abuse'
         ]
         self.pages = {}
-        for extension in self.all_cogs:
-            await self.load_extension(extension)
         self.data = json.load(open('data.json'))
         self.add_command(self.reload_cogs)
         self.add_command(self.invite)
@@ -60,6 +58,9 @@ class ACoolBot(commands.Bot):
             return self.data[str(gid)][name]
 
     async def on_ready(self):
+        for extension in self.all_cogs:
+            await self.load_extension(extension)
+
         await self.change_presence(activity=discord.Activity(type=discord.ActivityType.watching,
                                                              name="humanity withering away"))
 
@@ -385,13 +386,7 @@ class ACoolBot(commands.Bot):
 
 
 if __name__ == '__main__':
-    intents = discord.Intents.default()
-    intents.typing = False
-    intents.presences = False
-    intents.bans = False
-    intents.members = True
-    intents.messages = True
-
+    intents = discord.Intents.all()
     bot = ACoolBot(intents=intents, max_messages=10000, owner_id=254671305268264960)
     key = json.load(open('DiscordKey.json'))
     bot.run(key["key"])

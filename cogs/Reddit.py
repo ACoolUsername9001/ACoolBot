@@ -33,22 +33,22 @@ class Reddit(commands.Cog):
                         if len(line) > 1024:
                             for l in line.split(' '):
                                 if len(block + l + ' ') > 1024 or l == '&#x200B;':
-                                    if block.strip() is not '':
+                                    if block.strip() != '':
                                         description.append(block)
                                     block = ''
                                 if not l == '&#x200B;':
                                     block += l + ' '
                             continue
                         if len(block + line + '\n') > 1024 or line == '&#x200B;':
-                            if block.strip() is not '':
+                            if block.strip() != '':
                                 description.append(block)
                             block = ''
                         if not line == '&#x200B;' or line == '':
                             block += line + '\n'
-                    if block.strip() is not '':
+                    if block.strip() != '':
                         description.append(block)
                     for d in description:
-                        if d.strip() is not '':
+                        if d.strip() != '':
                             embed.add_field(name='-', value=d)
                 if hasattr(post, 'preview'):
                     try:
@@ -81,5 +81,5 @@ class Reddit(commands.Cog):
         await self.bot.embeds_scroller(ctx, embeds)
 
 
-def setup(bot):
-    bot.add_cog(Reddit(bot))
+async def setup(bot):
+    await bot.add_cog(Reddit(bot))

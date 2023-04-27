@@ -782,5 +782,5 @@ class Fun(commands.Cog):
                 await ctx.author.voice.channel.set_permissions(member, overwrite=None)
 
 
-def setup(bot):
-    bot.add_cog(Fun(bot))
+async def setup(bot):
+    await bot.add_cog(Fun(bot))
