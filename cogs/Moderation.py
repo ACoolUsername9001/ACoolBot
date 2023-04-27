@@ -17,7 +17,7 @@ class Moderation(commands.Cog):
             log_channel = ctx.bot.get_channel(log_channel_id)
             if log_channel:
                 embed = discord.Embed()
-                embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
+                embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar)
                 embed.title = ctx.command.name
                 embed.description = ctx.message.content
                 embed.timestamp = datetime.datetime.now()
